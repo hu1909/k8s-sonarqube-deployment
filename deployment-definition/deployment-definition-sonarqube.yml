@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sonarqube-deployment
+  namespace: sonarqube-namespace
+  labels:
+    app: sonarqube-fontend
+    
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sonarqube-fontend
+  template:
+    metadata:
+      namespace: sonarqube-namespace
+      labels:
+        app: sonarqube-fontend
+
+    spec:
+      initContainers: 
+      - name: kernel-setup
+        image: busybox
+        command: ['sh', '-c', 'sysctl -w vm.max_map_count=524288 && sysctl -w fs.file-max=131072']
+        imagePullPolicy: IfNotPresent
+        securityContext: 
+          privileged: true
+      
+      securityContext:
+        fsGroup: 2000
+      containers:
+      - name: sonarqube
+        image: sonarqube:8.9.1-community
+
+
+        ports:
+        - containerPort: 9000
+
+        volumeMounts:
+        - name: data-volume
+          mountPath: /opt/sonarqube/data/
+          subPath: data
+
+        - name: data-volume
+          mountPath: /opt/sonarqube/logs/
+          subPath: log
+
+        - name: data-volume
+          mountPath: /opt/sonarqube/extensions/
+          subPath: extension
+       
+
+        env:
+        - name: SONARQUBE_JDBC_URL
+          valueFrom:
+             configMapKeyRef:
+                name: configmap-for-sonarqube
+                key: SONARQUBE_JDBC_URL
+
+        - name: SONARQUBE_JDBC_USERNAME
+          valueFrom:
+             configMapKeyRef:
+                name: configmap-for-sonarqube
+                key: SONARQUBE_JDBC_USERNAME
+
+        - name: SONARQUBE_JDBC_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: secret-for-database 
+              key: database-password
+
+        - name: JAVA_OPTS
+          valueFrom:
+            configMapKeyRef:
+              name: configmap-for-sonarqube
+              key: JAVA_OPTS
+
+      volumes:
+      - name: data-volume
+        persistentVolumeClaim:
+           claimName: sonarqube-data-pvc

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sonarqube-data-pvc
+  namespace: sonarqube-namespace
+spec:
+  storageClassName: sonarqube-data-pv
+  accessModes:
+    - ReadWriteOnce
+  resources:
+     requests:
+        storage: 5Gi

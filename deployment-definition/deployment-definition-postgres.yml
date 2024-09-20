@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment 
+metadata: 
+  name: postgres-deployment
+  namespace: sonarqube-namespace
+  labels:
+    app: sonarqube-database
+spec:
+  replicas: 1
+  selector: 
+    matchLabels:
+      app: sonarqube-database
+  template:
+    metadata:
+      name: postgres-database
+      namespace: sonarqube-namespace
+      labels:
+        app: sonarqube-database
+
+    spec:
+      containers:
+      - name: sonarqube-database
+        image: bitnami/postgresql
+
+        ports:
+        - containerPort: 5432
+
+        env:
+        - name: POSTGRESQL_USERNAME
+          valueFrom:
+            configMapKeyRef:
+              name: configmap-for-postgres
+              key: POSTGRESQL_USERNAME
+
+        - name: POSTGRESQL_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: configmap-for-postgres
+              key: POSTGRESQL_DATABASE
+
+        - name: POSTGRESQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: secret-for-database
+              key: database-password
+
+        volumeMounts:
+        - name: postgres-data
+          mountPath: /opt/postgres/oradata
+
+      volumes:
+      - name: postgres-data
+        persistentVolumeClaim:
+          claimName: postgres-pvc
+

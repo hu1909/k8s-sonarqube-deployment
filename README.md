@@ -1,2 +1,9 @@
-# k8s-sonarqube-deployment
-Deploy the sonarqube within the K8s
+## YAML File explanation
+This repository will explain more detail about the definition of each components
+
+
+
+
+
+
+
