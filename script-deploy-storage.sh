@@ -1,14 +1,15 @@
 #!/bin/bash 
 
-$VARIABLE_PATH="K8s/sonarqube-deployment/variable-storage"
-$SERVICE_PATH="K8s/sonarqube-deployment/service-definition"
-$DEPLOYMENT_PATH="K8s/sonarqube-deployment/deployment-definition/"
-$PERSISTENT_PATH="K8s/sonarqube-deployment/persistent_volume/"
-$PERSISTENT_CLAIM_PATH="K8s/sonarqube-deployment/persistent_volume_claim/"
+$VARIABLE_PATH="./variable-storage"
+$SERVICE_PATH="./service-definition"
+$DEPLOYMENT_PATH="./deployment-definition/"
+$PERSISTENT_PATH="./persistent_volume/"
+$PERSISTENT_CLAIM_PATH="./persistent_volume_claim/"
 
 auto_deploy() {
-    find "$1" -type f | while read -r file; do 
-        echo "Processing different file"
+    find $1 -type f | while read -r file; do 
+        
+        echo "Processing different file: $file"
         kubectl apply -f $file
     done
 }

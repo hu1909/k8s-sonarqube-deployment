@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata: 
   name: configmap-for-sonarqube
-  namespace: sonarqube-namespace
+  namespace: monitoring
   labels:
     app: sonarqube
 data: 

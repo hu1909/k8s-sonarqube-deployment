@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  annotations:
+    meta.helm.sh/release-name: klaara-cimb-release
+    meta.helm.sh/release-namespace: aks-cimb-deployment
+    pv.kubernetes.io/bind-completed: "yes"
+    pv.kubernetes.io/bound-by-controller: "yes"
+    volume.beta.kubernetes.io/storage-provisioner: disk.csi.azure.com
+    volume.kubernetes.io/selected-node: aks-workernode-35787660-vmss00000i
+    volume.kubernetes.io/storage-provisioner: disk.csi.azure.com
+  creationTimestamp: "2025-06-07T05:44:00Z"
+  finalizers:
+  - kubernetes.io/pvc-protection
+  labels:
+    app.kubernetes.io/managed-by: Helm
+  name: klaara-volume-mysql-pvc
+  namespace: aks-cimb-deployment
+  resourceVersion: "6948101"
+  uid: 9d851f93-8559-4ab7-bea7-f487806831aa
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+  storageClassName: azuredisk-premium-retain
+  volumeMode: Filesystem
+  volumeName: pvc-9d851f93-8559-4ab7-bea7-f487806831aa
+status:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 20Gi
+  phase: Bound

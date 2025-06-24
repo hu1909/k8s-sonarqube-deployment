@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sonarqube-deployment
+  namespace: monitoring
+  labels:
+    app: sonarqube-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sonarqube-frontend
+  template:
+    metadata:
+      labels:
+        app: sonarqube-frontend
+    spec:
+      containers:
+      - name: sonarqube
+        image: sonarqube:8.9.1-community
+        ports:
+        - containerPort: 9000
+        volumeMounts:
+        - name: data-volume
+          mountPath: /opt/sonarqube/data/
+          subPath: data
+        - name: data-volume
+          mountPath: /opt/sonarqube/logs/
+          subPath: log
+        - name: data-volume
+          mountPath: /opt/sonarqube/extensions/
+          subPath: extension
+        env:
+        - name: SONARQUBE_JDBC_URL
+          valueFrom:
+            configMapKeyRef:
+              name: configmap-for-sonarqube
+              key: SONARQUBE_JDBC_URL
+        - name: SONARQUBE_JDBC_USERNAME
+          valueFrom:
+            configMapKeyRef:
+              name: configmap-for-sonarqube
+              key: SONARQUBE_JDBC_USERNAME
+        - name: SONARQUBE_JDBC_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: secret-for-database
+              key: database-password
+        - name: JAVA_OPTS
+          valueFrom:
+            configMapKeyRef:
+              name: configmap-for-sonarqube
+              key: JAVA_OPTS
+
+
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 9000
+          initialDelaySeconds: 60     
+          periodSeconds: 15
+          timeoutSeconds: 5
+          failureThreshold: 6
+
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 9000
+          initialDelaySeconds: 180    
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 10
+
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "500m"
+          limits: 
+            memory: "4Gi"
+            cpu: "2"
+
+      volumes:
+      - name: data-volume
+        persistentVolumeClaim:
+          claimName: sonarqube-data-pvc

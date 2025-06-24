@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata: 
   name: configmap-for-postgres
-  namespace: sonarqube-namespace
+  namespace: monitoring
   labels:
     app: postgres-database
 data: 

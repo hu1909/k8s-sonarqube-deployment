@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: sonarqube-deployment
-  namespace: sonarqube-namespace
+  namespace: monitoring
   labels:
     app: sonarqube-fontend
     
@@ -13,7 +13,7 @@ spec:
       app: sonarqube-fontend
   template:
     metadata:
-      namespace: sonarqube-namespace
+      namespace: monitoring
       labels:
         app: sonarqube-fontend
 
@@ -24,8 +24,7 @@ spec:
         command: ['sh', '-c', 'sysctl -w vm.max_map_count=524288 && sysctl -w fs.file-max=131072']
         imagePullPolicy: IfNotPresent
         securityContext: 
-          privileged: true
-      
+          privileged: true 
       securityContext:
         fsGroup: 2000
       containers:
